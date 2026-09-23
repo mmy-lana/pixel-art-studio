@@ -148,7 +148,9 @@ export function useSelectionBounds(dimensions: Dimensions): SelectionBoundsApi {
           continue;
         }
 
-        writes.push({ index: targetIndex, color: tuple.color });
+        if (tuple.color !== 0) {
+          writes.push({ index: targetIndex, color: tuple.color });
+        }
         movedTuples.push({ index: targetIndex, color: tuple.color });
       }
 
