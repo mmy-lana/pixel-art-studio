@@ -41,11 +41,17 @@ const LAYOUT_CLASSES: Record<ToolsetLayout, string> = {
   carousel: 'flex flex-row items-center gap-1.5',
 };
 
-const CAP_SIZE_BY_LAYOUT: Record<ToolsetLayout, 'icon-lg' | 'icon' | 'icon'> = {
-  rail: 'icon-lg',
+const CAP_SIZE_BY_LAYOUT: Record<ToolsetLayout, 'icon' | 'icon' | 'icon'> = {
+  rail: 'icon',
   grid: 'icon',
   carousel: 'icon',
 };
+
+const TOOL_GROUPS: readonly (readonly ToolType[])[] = [
+  ['pencil', 'eraser', 'bucket', 'eyedropper'],
+  ['line', 'rectangle', 'circle'],
+  ['select', 'pan'],
+];
 
 /**
  * Tool selection module.
@@ -74,44 +80,94 @@ export function ToolsetPanel({
 
   return (
     <div className={cx('flex flex-col gap-3', className)}>
-      <div className={LAYOUT_CLASSES[layout]} role="group" aria-label="Drawing tools">
-        {tools.map((definition) => {
-          const Icon = definition.icon;
-          const isActive = definition.id === activeTool;
+      {layout === 'rail' ? (
+        <div className="flex flex-col items-center gap-2" role="group" aria-label="Drawing tools">
+          {TOOL_GROUPS.map((group, groupIndex) => (
+            <div key={`group-${groupIndex}`} className="flex flex-col items-center gap-1.5">
+              {groupIndex > 0 && <span aria-hidden="true" className="arcade-divider my-0.5 w-7" />}
+              {group.map((toolId) => {
+                const definition = tools.find((tool) => tool.id === toolId);
+                if (!definition) return null;
+                const Icon = definition.icon;
+                const isActive = definition.id === activeTool;
 
-          return (
-            <ArcadeTooltip
-              key={definition.id}
-              label={`${definition.label} — ${definition.description}`}
-              hotkey={definition.hotkey ?? undefined}
-              placement={layout === 'rail' ? 'right' : 'top'}
-            >
-              <ArcadeButton
-                size={CAP_SIZE_BY_LAYOUT[layout]}
-                variant="secondary"
-                active={isActive}
-                aria-pressed={isActive}
-                aria-label={`${definition.label} tool${definition.hotkey !== null ? ` (${definition.hotkey})` : ''}`}
-                onClick={() => {
-                  onSelectTool(definition.id);
-                }}
-                className="relative"
+                return (
+                  <ArcadeTooltip
+                    key={definition.id}
+                    label={`${definition.label} — ${definition.description}`}
+                    hotkey={definition.hotkey ?? undefined}
+                    placement="right"
+                  >
+                    <ArcadeButton
+                      size={CAP_SIZE_BY_LAYOUT[layout]}
+                      variant={isActive ? 'primary' : 'secondary'}
+                      active={isActive}
+                      aria-pressed={isActive}
+                      aria-label={`${definition.label} tool${definition.hotkey !== null ? ` (${definition.hotkey})` : ''}`}
+                      onClick={() => {
+                        onSelectTool(definition.id);
+                      }}
+                      className={cx(
+                        'relative transition-all',
+                        isActive && 'ring-2 ring-arcade-cyan shadow-[0_0_8px_rgba(0,255,102,0.6)]'
+                      )}
+                    >
+                      <span className="relative flex items-center justify-center">
+                        <Icon aria-hidden="true" className="h-5 w-5" strokeWidth={2.5} />
+                        {isActive && (
+                          <span
+                            aria-hidden="true"
+                            className="led led-green absolute -right-2 -top-2"
+                          />
+                        )}
+                      </span>
+                    </ArcadeButton>
+                  </ArcadeTooltip>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={LAYOUT_CLASSES[layout]} role="group" aria-label="Drawing tools">
+          {tools.map((definition) => {
+            const Icon = definition.icon;
+            const isActive = definition.id === activeTool;
+
+            return (
+              <ArcadeTooltip
+                key={definition.id}
+                label={`${definition.label} — ${definition.description}`}
+                hotkey={definition.hotkey ?? undefined}
+                placement="top"
               >
-                <span className="relative flex items-center justify-center">
-                  <Icon aria-hidden="true" className="h-5 w-5" strokeWidth={2.5} />
+                <ArcadeButton
+                  size={CAP_SIZE_BY_LAYOUT[layout]}
+                  variant="secondary"
+                  active={isActive}
+                  aria-pressed={isActive}
+                  aria-label={`${definition.label} tool${definition.hotkey !== null ? ` (${definition.hotkey})` : ''}`}
+                  onClick={() => {
+                    onSelectTool(definition.id);
+                  }}
+                  className="relative"
+                >
+                  <span className="relative flex items-center justify-center">
+                    <Icon aria-hidden="true" className="h-5 w-5" strokeWidth={2.5} />
 
-                  {isActive && (
-                    <span
-                      aria-hidden="true"
-                      className="led led-green absolute -right-2 -top-2"
-                    />
-                  )}
-                </span>
-              </ArcadeButton>
-            </ArcadeTooltip>
-          );
-        })}
-      </div>
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        className="led led-green absolute -right-2 -top-2"
+                      />
+                    )}
+                  </span>
+                </ArcadeButton>
+              </ArcadeTooltip>
+            );
+          })}
+        </div>
+      )}
 
       {showBrushSize && (
         <div className="px-0.5">
