@@ -1,30 +1,411 @@
+/*
+ * Arcade component layer.
+ *
+ * Plain CSS classes (rather than Tailwind @utility) so they can be composed with
+ * utility classes, pseudo-classes and media queries without depending on
+ * directive semantics. Colour values always come from the @theme tokens declared
+ * in main.css.
+ */
+
+/* ------------------------------------------------------------------ *
+ * Bevels — the three depth primitives every surface is built from
+ * ------------------------------------------------------------------ */
+
+/* Raised cap: light from the top-left, shadow bottom-right. */
 .pixel-border-outset {
-  box-shadow: 
-    inset -2px -2px 0px 0px #000000,
-    inset 2px 2px 0px 0px #ffffff40,
+  box-shadow:
+    inset -2px -2px 0 0 #000000,
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.28),
     0 0 0 2px #000000;
 }
 
+/* Recessed well: light inverted — used for pressed and disabled states. */
 .pixel-border-inset {
-  box-shadow: 
-    inset 2px 2px 0px 0px #000000,
-    inset -2px -2px 0px 0px #ffffff20,
-    0 0 0 1px #000000;
+  box-shadow:
+    inset 2px 2px 0 0 #000000,
+    inset -2px -2px 0 0 rgba(255, 255, 255, 0.12),
+    0 0 0 2px #000000;
 }
 
+/* Cabinet moulding: extruded left/right chassis edges. */
 .pixel-border-arcade {
-  box-shadow: 
-    0 -3px 0 0 #282a3a,
+  box-shadow:
+    0 -3px 0 0 var(--color-arcade-border),
     0 3px 0 0 #000000,
-    -3px 0 0 0 #282a3a,
+    -3px 0 0 0 var(--color-arcade-border),
     3px 0 0 0 #000000;
 }
 
+/* Flat 2px outline for inline chips and list rows. */
+.pixel-border-flat {
+  box-shadow: 0 0 0 2px #000000;
+}
+
+/* Hairline inner keyline for nested panels. */
+.pixel-keyline {
+  box-shadow: inset 0 0 0 1px var(--color-arcade-border-light);
+}
+
+/* ------------------------------------------------------------------ *
+ * Press physics
+ * ------------------------------------------------------------------ */
+
+.pixel-press {
+  transition:
+    transform 60ms steps(2, end),
+    box-shadow 60ms steps(2, end),
+    background-color 80ms linear,
+    color 80ms linear;
+}
+
+.pixel-press:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 2px 2px 0 0 #000000,
+    inset -2px -2px 0 0 rgba(255, 255, 255, 0.12),
+    0 0 0 2px #000000;
+}
+
+@media (hover: hover) {
+  .pixel-press:not(:disabled):not([aria-disabled="true"]):hover {
+    filter: brightness(1.12);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * LED indicators
+ * ------------------------------------------------------------------ */
+
+.led {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  background: var(--color-arcade-disabled);
+  box-shadow: 0 0 0 1px #000000;
+}
+
+.led-green {
+  background: var(--color-arcade-neon-green);
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 6px 0 var(--color-arcade-neon-green);
+}
+
+.led-cyan {
+  background: var(--color-arcade-cyan);
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 6px 0 var(--color-arcade-cyan);
+}
+
+.led-pink {
+  background: var(--color-arcade-hot-pink);
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 6px 0 var(--color-arcade-hot-pink);
+}
+
+.led-amber {
+  background: var(--color-arcade-amber);
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 6px 0 var(--color-arcade-amber);
+}
+
+.led-red {
+  background: var(--color-arcade-red);
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 6px 0 var(--color-arcade-red);
+}
+
+.led-pulse {
+  animation: arcade-led-pulse 1.6s steps(2, end) infinite;
+}
+
+/* ------------------------------------------------------------------ *
+ * Backdrops
+ * ------------------------------------------------------------------ */
+
+/* Transparency checkerboard rendered behind the document. */
+.arcade-checker {
+  background-color: #2a2a36;
+  background-image:
+    linear-gradient(45deg, #1b1b24 25%, transparent 25%),
+    linear-gradient(-45deg, #1b1b24 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1b1b24 75%),
+    linear-gradient(-45deg, transparent 75%, #1b1b24 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+.arcade-backdrop-dark {
+  background-color: #07070b;
+}
+
+.arcade-backdrop-light {
+  background-color: #d8d8e0;
+}
+
+/* Workbench floor: subtle grid so the canvas board reads as a machine deck. */
+.arcade-deck {
+  background-color: var(--color-arcade-black);
+  background-image:
+    linear-gradient(to right, rgba(59, 63, 86, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(59, 63, 86, 0.22) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ------------------------------------------------------------------ *
+ * CRT effects (non-interactive overlays)
+ * ------------------------------------------------------------------ */
+
 .crt-scanlines {
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.35) 50%
-  );
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
   background-size: 100% 4px;
-  pointer-events: none;
+}
+
+.crt-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 55%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+.crt-glow {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 229, 255, 0.05) 0%,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0) 70%,
+    rgba(0, 255, 102, 0.04) 100%
+  );
+}
+
+.crt-flicker {
+  animation: arcade-flicker 4s steps(12, end) infinite;
+}
+
+/* ------------------------------------------------------------------ *
+ * Stepped range slider (ArcadeSlider)
+ * ------------------------------------------------------------------ */
+
+.arcade-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.arcade-range::-webkit-slider-runnable-track {
+  height: 8px;
+  background: var(--color-arcade-surface-sunken);
+  border: 2px solid #000000;
+  box-shadow: inset 0 0 0 1px var(--color-arcade-border);
+}
+
+.arcade-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 20px;
+  margin-top: -8px;
+  background: var(--color-arcade-neon-green);
+  border: 2px solid #000000;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.45),
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.45);
+}
+
+.arcade-range::-moz-range-track {
+  height: 8px;
+  background: var(--color-arcade-surface-sunken);
+  border: 2px solid #000000;
+  box-shadow: inset 0 0 0 1px var(--color-arcade-border);
+}
+
+.arcade-range::-moz-range-thumb {
+  width: 14px;
+  height: 20px;
+  border-radius: 0;
+  background: var(--color-arcade-neon-green);
+  border: 2px solid #000000;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, 0.45),
+    inset 2px 2px 0 0 rgba(255, 255, 255, 0.45);
+}
+
+.arcade-range:disabled {
+  cursor: not-allowed;
+}
+
+.arcade-range:disabled::-webkit-slider-thumb {
+  background: var(--color-arcade-disabled);
+}
+
+.arcade-range:disabled::-moz-range-thumb {
+  background: var(--color-arcade-disabled);
+}
+
+/* Tick marks drawn beneath a stepped slider. */
+.arcade-range-ticks {
+  background-image: linear-gradient(
+    to right,
+    var(--color-arcade-border-light) 0 2px,
+    transparent 2px
+  );
+  background-size: var(--tick-size, 10%) 4px;
+  background-repeat: repeat-x;
+}
+
+/* ------------------------------------------------------------------ *
+ * Select menu + tooltip chrome
+ * ------------------------------------------------------------------ */
+
+.arcade-menu {
+  box-shadow:
+    0 4px 0 0 #000000,
+    0 0 0 2px var(--color-arcade-border-light),
+    inset 0 0 0 2px var(--color-arcade-black);
+}
+
+/* 90-degree pixel arrow, drawn with borders (no icon font). */
+.arcade-caret {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+}
+
+.arcade-tooltip-bubble {
+  box-shadow:
+    0 3px 0 0 #000000,
+    0 0 0 2px var(--color-arcade-neon-green);
+}
+
+/* ------------------------------------------------------------------ *
+ * Badges, dividers, spinners
+ * ------------------------------------------------------------------ */
+
+.arcade-badge {
+  box-shadow: 0 0 0 1px #000000;
+  background: var(--color-arcade-surface-sunken);
+  color: var(--color-arcade-muted);
+}
+
+.arcade-divider {
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    var(--color-arcade-border) 0 4px,
+    transparent 4px 8px
+  );
+  background-size: 8px 2px;
+}
+
+.arcade-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  border-top-color: var(--color-arcade-black);
+  animation: arcade-spin 0.6s steps(8, end) infinite;
+}
+
+/* Wide shimmer used for "saving" / "loading" progress bars. */
+.arcade-marquee {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-arcade-neon-green) 0 8px,
+    transparent 8px 16px
+  );
+  background-size: 16px 100%;
+  animation: arcade-marquee 0.8s linear infinite;
+}
+
+/* Step-block reveal used when dialogs mount. */
+.arcade-pop {
+  animation: arcade-pop 0.12s steps(3, end) 1;
+}
+
+.arcade-slide-up {
+  animation: arcade-slide-up 0.16s steps(4, end) 1;
+}
+
+/* ------------------------------------------------------------------ *
+ * Keyframes
+ * ------------------------------------------------------------------ */
+
+@keyframes arcade-led-pulse {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes arcade-flicker {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  48% {
+    opacity: 0.9;
+  }
+
+  49% {
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes arcade-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes arcade-marquee {
+  to {
+    background-position: 16px 0;
+  }
+}
+
+@keyframes arcade-pop {
+  0% {
+    transform: scale(0.94);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes arcade-slide-up {
+  0% {
+    transform: translateY(12px);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

@@ -1,28 +1,158 @@
 @import "tailwindcss";
 
+/*
+ * Arcade design tokens.
+ *
+ * CSS-first Tailwind v4 configuration: every token declared here becomes a
+ * first-class utility (`bg-arcade-surface`, `text-arcade-neon-green`,
+ * `font-arcade`, `text-pixel-sm`, ...). No component hardcodes a hex value;
+ * rebranding the cabinet happens in this single block.
+ */
 @theme {
+  /* Cabinet surfaces */
   --color-arcade-black: #0c0c14;
+  --color-arcade-ink: #05050a;
   --color-arcade-surface: #171822;
+  --color-arcade-surface-raised: #1f2231;
+  --color-arcade-surface-sunken: #101119;
   --color-arcade-border: #282a3a;
+  --color-arcade-border-light: #3b3f56;
+
+  /* Signal colours */
   --color-arcade-neon-green: #00ff66;
   --color-arcade-hot-pink: #ff007f;
   --color-arcade-cyan: #00e5ff;
   --color-arcade-amber: #ffaa00;
+  --color-arcade-violet: #b026ff;
+  --color-arcade-red: #ff3b3b;
+
+  /* Text */
+  --color-arcade-text: #e8eaf6;
+  --color-arcade-muted: #7a809a;
+  --color-arcade-disabled: #454b63;
+
+  /* Typography — one 8-bit family across the whole cabinet. */
   --font-arcade: "Press Start 2P", "Courier New", monospace;
+
+  /* Pixel type scale (Press Start 2P is illegible below 8px). */
+  --text-pixel-xs: 0.5rem;
+  --text-pixel-xs--line-height: 1rem;
+  --text-pixel-sm: 0.625rem;
+  --text-pixel-sm--line-height: 1.25rem;
+  --text-pixel-md: 0.75rem;
+  --text-pixel-md--line-height: 1.5rem;
+  --text-pixel-lg: 0.875rem;
+  --text-pixel-lg--line-height: 1.75rem;
+  --text-pixel-xl: 1.125rem;
+  --text-pixel-xl--line-height: 2rem;
+
+  /* Layout rails from the responsive breakpoint matrix (plan §4.1). */
+  --spacing-rail-tablet: 48px;
+  --spacing-rail-desktop: 64px;
+  --spacing-dock-mobile: 56px;
 }
 
 :root {
   color-scheme: dark;
+  /* Safe-area fallbacks keep every calc() valid on non-notched hardware. */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--color-arcade-black, #0c0c14);
-  color: #ffffff;
-  font-family: var(--font-arcade, monospace);
+  background-color: var(--color-arcade-black);
+  color: var(--color-arcade-text);
+  font-family: var(--font-arcade);
+  font-size: var(--text-pixel-sm);
+  line-height: 1.5;
   user-select: none;
   -webkit-user-select: none;
   overflow: hidden;
+  overscroll-behavior: none;
+  /* The shell owns all gestures; the canvas re-enables nothing else. */
   touch-action: none;
+}
+
+/* Text fields must opt back into selection and caret gestures. */
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: manipulation;
+}
+
+::selection {
+  background-color: var(--color-arcade-neon-green);
+  color: var(--color-arcade-black);
+}
+
+img,
+canvas {
+  image-rendering: pixelated;
+}
+
+/* Focus: an unmissable halo, keyboard users only. */
+:focus-visible {
+  outline: 2px solid var(--color-arcade-cyan);
+  outline-offset: 2px;
+}
+
+/* Chunky pixel scrollbars for panels and drawers. */
+.arcade-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-arcade-border-light) transparent;
+}
+
+.arcade-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.arcade-scroll::-webkit-scrollbar-track {
+  background: var(--color-arcade-surface-sunken);
+}
+
+.arcade-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-arcade-border-light);
+  border: 2px solid var(--color-arcade-surface-sunken);
+}
+
+.arcade-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-arcade-neon-green);
+}
+
+/* Scrollable but chrome-free — used by the mobile tool carousel. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Every animation in the cabinet is decorative. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
