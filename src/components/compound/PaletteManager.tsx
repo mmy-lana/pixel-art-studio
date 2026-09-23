@@ -91,8 +91,14 @@ export function PaletteManager({
       return;
     }
 
-    setAddError(null);
     const normalized = normalizeHexColor(trimmed);
+
+    if (activePalette.colors.some((color) => normalizeHexColor(color.hex) === normalized)) {
+      setAddError('Colour is already in this palette.');
+      return;
+    }
+
+    setAddError(null);
     onAddColor(normalized);
     setAddDraft(normalized);
     retroAudioEngine.playActionSuccess();
