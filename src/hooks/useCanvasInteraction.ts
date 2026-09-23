@@ -191,6 +191,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
   const hoverRef = useRef<Point | null>(null);
   const lastHoverPublishRef = useRef(0);
   const wheelDeltaAccumulatorRef = useRef(0);
+  const overlayRafRef = useRef<number | null>(null);
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
@@ -384,9 +385,29 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
     }
   }, [getContainerRect, overlayCanvasRef, selection.selectedPixels]);
 
-  const repaintOverlay = useCallback((): void => {
-    paintOverlay();
+  const requestOverlayRepaint = useCallback((): void => {
+    if (overlayRafRef.current !== null) {
+      return;
+    }
+
+    overlayRafRef.current = window.requestAnimationFrame(() => {
+      overlayRafRef.current = null;
+      paintOverlay();
+    });
   }, [paintOverlay]);
+
+  const repaintOverlay = useCallback((): void => {
+    requestOverlayRepaint();
+  }, [requestOverlayRepaint]);
+
+  useEffect(() => {
+    return () => {
+      if (overlayRafRef.current !== null) {
+        window.cancelAnimationFrame(overlayRafRef.current);
+        overlayRafRef.current = null;
+      }
+    };
+  }, []);
 
   /* ------------------------------------------------------------------ *
    * Stroke lifecycle
@@ -804,7 +825,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
           hover.y < dimensions.height;
 
         hoverRef.current = insideArtboard ? hover : null;
-        paintOverlay();
+        requestOverlayRepaint();
 
         const now = performance.now();
 
@@ -866,7 +887,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
 
       if (stroke.kind === 'shape') {
         stroke.current = gridPoint;
-        paintOverlay();
+        requestOverlayRepaint();
         return;
       }
 
@@ -886,7 +907,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
 
       if (stroke.kind === 'move-selection') {
         stroke.current = gridPoint;
-        paintOverlay();
+        requestOverlayRepaint();
       }
     },
     [
