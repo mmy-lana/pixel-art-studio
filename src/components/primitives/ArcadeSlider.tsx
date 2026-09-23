@@ -106,20 +106,22 @@ export function ArcadeSlider({
         </div>
       )}
 
-      <input
-        ref={ref}
-        id={inputId}
-        type="range"
-        className="arcade-range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        disabled={disabled}
-        aria-label={ariaLabel ?? (typeof label === 'string' ? label : undefined)}
-        aria-valuetext={displayValue}
-        onChange={handleChange}
-      />
+      <div className="flex min-h-[44px] items-center">
+        <input
+          ref={ref}
+          id={inputId}
+          type="range"
+          className="arcade-range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          disabled={disabled}
+          aria-label={ariaLabel ?? (typeof label === 'string' ? label : undefined)}
+          aria-valuetext={displayValue}
+          onChange={handleChange}
+        />
+      </div>
 
       {showTicks && stepCount > 0 && stepCount <= 15 && (
         <div
