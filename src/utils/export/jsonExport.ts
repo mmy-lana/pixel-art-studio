@@ -218,6 +218,10 @@ export function parseProjectJson(json: string): {
     throw new ProjectJsonError('The file contains no layers.');
   }
 
+  if (candidate.layers.length > 12) {
+    throw new ProjectJsonError('The file exceeds the maximum limit of 12 layers.');
+  }
+
   const now = Date.now();
   const projectId = createEntityId();
   const expectedBytes = width * height * 4;
