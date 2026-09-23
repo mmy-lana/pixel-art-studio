@@ -484,7 +484,18 @@ export function StudioPage() {
               showBrushSize={false}
             />
             <span aria-hidden="true" className="arcade-divider my-1 w-8" />
-            {historyPanel}
+            <HistoryControls
+              canUndo={history.canUndo}
+              canRedo={history.canRedo}
+              undoActionName={history.undoActionName}
+              redoActionName={history.redoActionName}
+              onUndo={history.undo}
+              onRedo={history.redo}
+              historyDepth={history.historyDepth}
+              historyLimit={history.historyLimit}
+              variant="compact"
+              orientation="vertical"
+            />
           </>
         }
         canvas={canvasViewport}

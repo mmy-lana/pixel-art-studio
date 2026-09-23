@@ -21,6 +21,8 @@ export interface HistoryControlsProps {
   historyLimit?: number;
   /** `bar` adds the depth readout, `compact` is caps only. */
   variant?: 'bar' | 'compact';
+  /** Flex direction: `'horizontal'` row or `'vertical'` column. */
+  orientation?: 'horizontal' | 'vertical';
   className?: string;
 }
 
@@ -41,6 +43,7 @@ export function HistoryControls({
   historyDepth,
   historyLimit = 50,
   variant = 'bar',
+  orientation = 'horizontal',
   className,
 }: HistoryControlsProps) {
   const undoLabel =
@@ -50,7 +53,15 @@ export function HistoryControls({
     canRedo && redoActionName !== null ? `Redo ${redoActionName} (Ctrl+Y)` : 'Nothing to redo';
 
   return (
-    <div className={cx('flex items-center gap-1.5', className)} role="group" aria-label="History">
+    <div
+      className={cx(
+        'flex items-center gap-1.5',
+        orientation === 'vertical' ? 'flex-col' : 'flex-row',
+        className,
+      )}
+      role="group"
+      aria-label="History"
+    >
       <ArcadeTooltip label={undoLabel}>
         <ArcadeButton
           size="icon"
