@@ -615,6 +615,7 @@ export async function saveProjectWithLayers(
 ): Promise<void> {
   const projectRecord = assertProjectRecord(project);
   const layerRecords = layers.map((layer) => assertLayerRecord(layer));
+  const currentLayerIds = new Set(layerRecords.map((layer) => layer.id));
 
   await runTransaction(
     [PROJECT_STORE_NAME, LAYER_STORE_NAME],
@@ -623,11 +624,23 @@ export async function saveProjectWithLayers(
     async (transaction) => {
       const projectStore = transaction.objectStore(PROJECT_STORE_NAME);
       const layerStore = transaction.objectStore(LAYER_STORE_NAME);
+      const index = layerStore.index(LAYER_PROJECT_INDEX);
 
-      await requestToPromise(projectStore.put(projectRecord), 'saveProjectWithLayers');
+      const existingKeys = await requestToPromise<IDBValidKey[]>(
+        index.getAllKeys(IDBKeyRange.only(project.id)),
+        'saveProjectWithLayers:queryKeys',
+      );
+
+      for (const key of existingKeys) {
+        if (!currentLayerIds.has(String(key))) {
+          await requestToPromise(layerStore.delete(key), 'saveProjectWithLayers:deleteOrphan');
+        }
+      }
+
+      await requestToPromise(projectStore.put(projectRecord), 'saveProjectWithLayers:saveProject');
 
       for (const record of layerRecords) {
-        await requestToPromise(layerStore.put(record), 'saveProjectWithLayers');
+        await requestToPromise(layerStore.put(record), 'saveProjectWithLayers:saveLayer');
       }
     },
   );
