@@ -97,8 +97,8 @@ export function createSlugId(seed: string): string {
     seed
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 40) || 'item';
+      .slice(0, 40)
+      .replace(/^-+|-+$/g, '') || 'item';
 
   return `${slug}-${createEntityId().slice(0, 8)}`;
 }
