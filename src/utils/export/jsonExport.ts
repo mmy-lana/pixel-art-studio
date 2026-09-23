@@ -208,9 +208,9 @@ export function parseProjectJson(json: string): {
   const width = Math.round(requireNumber(header.width, 'project.width'));
   const height = Math.round(requireNumber(header.height, 'project.height'));
 
-  if (width < 1 || height < 1 || width > 1024 || height > 1024) {
+  if (width < 1 || height < 1 || width > 128 || height > 128) {
     throw new ProjectJsonError(
-      `Canvas size ${width}x${height} is outside the supported 1x1 to 1024x1024 range.`,
+      `Canvas size ${width}x${height} exceeds the supported maximum limit of 128x128.`,
     );
   }
 
