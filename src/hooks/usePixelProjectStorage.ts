@@ -113,8 +113,6 @@ export function usePixelProjectStorage(autoRestore: boolean = true): PixelProjec
       return false;
     }
 
-    const revisionBeingSaved = state.documentRevision;
-
     projectStore.beginWrite();
 
     try {
@@ -127,12 +125,16 @@ export function usePixelProjectStorage(autoRestore: boolean = true): PixelProjec
           state.currentProject.height,
         )) ?? state.currentProject.thumbnailUrl;
 
-      const projectToSave =
-        thumbnailUrl === state.currentProject.thumbnailUrl
-          ? state.currentProject
-          : { ...state.currentProject, thumbnailUrl };
+      // Re-read latest state immediately before the atomic transaction to prevent clobbering inflight edits.
+      const latestState = editorStore.getState();
+      const revisionBeingSaved = latestState.documentRevision;
 
-      await saveProjectWithLayers(projectToSave, state.layers);
+      const projectToSave =
+        thumbnailUrl === latestState.currentProject.thumbnailUrl
+          ? latestState.currentProject
+          : { ...latestState.currentProject, thumbnailUrl };
+
+      await saveProjectWithLayers(projectToSave, latestState.layers);
 
       editorStore.markSaved(revisionBeingSaved);
       editorStore.setStoredThumbnail(thumbnailUrl);
