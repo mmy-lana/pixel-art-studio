@@ -47,6 +47,23 @@
 }
 
 /* ------------------------------------------------------------------ *
+ * Touch target floor
+ * ------------------------------------------------------------------ */
+
+/*
+ * Plan §4.1 requires a 44x44px minimum for mobile action buttons. Dense caps
+ * (`sm` / `icon-sm`) exist so desktop side panels can stay compact; on coarse
+ * pointers they are promoted to the touch minimum, which keeps one component
+ * honest on both input classes instead of forking the layout per breakpoint.
+ */
+@media (pointer: coarse) {
+  .arcade-cap-dense {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * Press physics
  * ------------------------------------------------------------------ */
 

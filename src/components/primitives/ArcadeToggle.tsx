@@ -73,6 +73,10 @@ const KNOB_TRAVEL_CLASSES: Record<ArcadeToggleSize, string> = {
  *
  * Exposes `role="switch"` + `aria-checked` so assistive technology announces a
  * toggle rather than a button, and keeps a 44px-tall hit area at every size.
+ *
+ * LAYOUT NOTE: the rocker always lays out as `inline-flex`, so hide it with a
+ * wrapper (`<span className="hidden phone:inline-flex">`) rather than a `hidden`
+ * class on the component itself.
  */
 export function ArcadeToggle({
   checked,

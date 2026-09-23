@@ -28,6 +28,7 @@ import {
   saveProjectWithLayers,
 } from '../utils/storage/indexedDbClient';
 import { createEntityId } from '../utils/id/createEntityId';
+import { exportThumbnailDataUrl } from '../utils/export/pngExport';
 
 /** Debounce window for autosave, in milliseconds. */
 export const AUTOSAVE_DEBOUNCE_MS = 400;
@@ -117,10 +118,25 @@ export function usePixelProjectStorage(autoRestore: boolean = true): PixelProjec
     projectStore.beginWrite();
 
     try {
-      await saveProjectWithLayers(state.currentProject, state.layers);
+      // Capture a preview for the library. A failure here is non-fatal: the
+      // helper returns null and the previous thumbnail is kept.
+      const thumbnailUrl =
+        (await exportThumbnailDataUrl(
+          state.layers,
+          state.currentProject.width,
+          state.currentProject.height,
+        )) ?? state.currentProject.thumbnailUrl;
+
+      const projectToSave =
+        thumbnailUrl === state.currentProject.thumbnailUrl
+          ? state.currentProject
+          : { ...state.currentProject, thumbnailUrl };
+
+      await saveProjectWithLayers(projectToSave, state.layers);
 
       editorStore.markSaved(revisionBeingSaved);
-      projectStore.upsertProject(state.currentProject);
+      editorStore.setStoredThumbnail(thumbnailUrl);
+      projectStore.upsertProject(projectToSave);
       projectStore.endWrite(true);
       projectStore.setStorageEstimate(await estimateStorageUsage());
 

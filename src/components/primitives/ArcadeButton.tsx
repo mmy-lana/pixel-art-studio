@@ -95,6 +95,14 @@ const SIZE_CLASSES: Record<ArcadeButtonSize, string> = {
  * Renders a native `<button>` with a bevelled cap, press translation, an optional
  * synthesised click, full disabled/loading semantics, and pass-through of all
  * remaining native button props.
+ *
+ * LAYOUT NOTE: the cap always lays out as `inline-flex`, so a caller-supplied
+ * `hidden` will NOT win — both are single-class utilities and CSS source order
+ * decides, not attribute order. To make a cap responsive, wrap it:
+ *
+ *   <span className="hidden phone:inline-flex">
+ *     <ArcadeButton ... />
+ *   </span>
  */
 export function ArcadeButton({
   children,
@@ -142,6 +150,8 @@ export function ArcadeButton({
         'pixel-press relative inline-flex select-none items-center font-arcade uppercase leading-none',
         'border-2 text-pixel-xs',
         SIZE_CLASSES[size],
+        // Dense caps are promoted to the 44px touch minimum on coarse pointers.
+        (size === 'sm' || size === 'icon-sm') && 'arcade-cap-dense',
         fullWidth && 'w-full',
         active ? 'pixel-border-inset' : 'pixel-border-outset',
         disabled || loading

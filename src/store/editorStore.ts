@@ -339,6 +339,10 @@ export interface EditorActions {
   renameLayer: (layerId: string, name: string) => void;
   setLayerVisible: (layerId: string, visible: boolean) => void;
   setLayerLocked: (layerId: string, locked: boolean) => void;
+  /** Flips a layer's visibility; the layer-row cap is a toggle, not a setter. */
+  toggleLayerVisible: (layerId: string) => void;
+  /** Flips a layer's lock state. */
+  toggleLayerLocked: (layerId: string) => void;
   setLayerOpacity: (layerId: string, opacity: number) => void;
   setLayerBlendMode: (layerId: string, blendMode: BlendMode) => void;
 
@@ -370,8 +374,23 @@ export interface EditorActions {
   createNewProject: (options: NewProjectOptions) => void;
   setProjectTitle: (title: string) => void;
   setProjectFps: (fps: number) => void;
-  updateProjectThumbnail: (thumbnailUrl: string | null) => void;
+  /**
+   * Stores the thumbnail produced by the save pipeline.
+   *
+   * Deliberately does NOT bump `documentRevision`: the thumbnail is derived from
+   * the revision that was just persisted, so marking it dirty would schedule
+   * another autosave and loop forever.
+   */
+  setStoredThumbnail: (thumbnailUrl: string | null) => void;
   markSaved: (revision: number) => void;
+  /**
+   * Forces the next autosave to write the current document.
+   *
+   * Used after importing a file: `loadProject` treats a freshly loaded document
+   * as already persisted, which is correct for a record read out of IndexedDB but
+   * wrong for a project that has never been stored.
+   */
+  markDocumentDirty: () => void;
   setHydrated: (hydrated: boolean) => void;
 }
 
@@ -843,6 +862,22 @@ const actions: EditorActions = {
     updateLayer(layerId, (layer) => ({ ...layer, locked, updatedAt: Date.now() }));
   },
 
+  toggleLayerVisible: (layerId) => {
+    updateLayer(layerId, (layer) => ({
+      ...layer,
+      visible: !layer.visible,
+      updatedAt: Date.now(),
+    }));
+  },
+
+  toggleLayerLocked: (layerId) => {
+    updateLayer(layerId, (layer) => ({
+      ...layer,
+      locked: !layer.locked,
+      updatedAt: Date.now(),
+    }));
+  },
+
   setLayerOpacity: (layerId, opacity) => {
     const clamped = Math.max(0, Math.min(1, opacity));
 
@@ -1085,12 +1120,22 @@ const actions: EditorActions = {
     setDocumentState({ currentProject: { ...getState().currentProject, fps: clamped } });
   },
 
-  updateProjectThumbnail: (thumbnailUrl) => {
-    setDocumentState({ currentProject: { ...getState().currentProject, thumbnailUrl } });
+  setStoredThumbnail: (thumbnailUrl) => {
+    const state = getState();
+
+    if (state.currentProject.thumbnailUrl === thumbnailUrl) {
+      return;
+    }
+
+    setState({ currentProject: { ...state.currentProject, thumbnailUrl } });
   },
 
   markSaved: (revision) => {
     setState({ savedRevision: revision });
+  },
+
+  markDocumentDirty: () => {
+    setState({ documentRevision: getState().documentRevision + 1 });
   },
 
   setHydrated: (hydrated) => {

@@ -220,6 +220,25 @@ export function CanvasViewport({ className }: CanvasViewportProps) {
         className="pointer-events-none absolute inset-0 h-full w-full"
       />
 
+      {/*
+        Hover HUD. Lives inside the canvas so cursor tracking never re-renders the
+        surrounding shell; the interaction hook already throttles it to ~16Hz.
+      */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-2 top-2 z-10 flex items-center gap-2 border-2 border-black bg-arcade-ink/85 px-1.5 py-1 text-pixel-xs uppercase tabular-nums text-arcade-cyan"
+      >
+        <span>
+          {interaction.hoverPixel === null
+            ? 'X --- Y ---'
+            : `X ${String(interaction.hoverPixel.x).padStart(3, '0')} Y ${String(interaction.hoverPixel.y).padStart(3, '0')}`}
+        </span>
+        <span className="text-arcade-muted">{Math.round(viewport.zoom * 100)}%</span>
+        <span className="text-arcade-muted">
+          {dimensions.width}×{dimensions.height}
+        </span>
+      </div>
+
       {/* Transient warnings (locked layer, blocked action). */}
       {interaction.warningMessage !== null && (
         <div

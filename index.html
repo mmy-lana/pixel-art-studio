@@ -2,14 +2,79 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Pixel Art Studio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Pixel Art Studio — 8-Bit Sprite Editor</title>
+    <meta
+      name="description"
+      content="An offline-first retro pixel art editor: layered drawing, symmetry, palettes, animations-ready exports and local project storage."
+    />
+    <meta name="theme-color" content="#0c0c14" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Pre-hydration shell. Painted before any JavaScript runs so the cabinet never
+      flashes white; React replaces the contents of #root on mount.
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #0c0c14;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+
+      #boot {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        color: #00ff66;
+        font: 12px/1.8 "Press Start 2P", "Courier New", monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+    </style>
   </head>
-  <body class="bg-[#0c0c14] text-white overflow-hidden select-none touch-none">
-    <div id="root"></div>
+  <body>
+    <div id="root">
+      <div id="boot">
+        <span>
+          PIXEL ART STUDIO
+          <br />
+          <span style="color: #7a809a">LOADING CABINET…</span>
+        </span>
+      </div>
+    </div>
+    <noscript>
+      <p
+        style="
+          color: #ffaa00;
+          font: 12px/1.8 'Courier New', monospace;
+          padding: 1rem;
+          text-align: center;
+        "
+      >
+        Pixel Art Studio needs JavaScript enabled: the canvas, the local project
+        database and the audio engine all run in the browser.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -50,6 +50,16 @@
   --spacing-rail-tablet: 48px;
   --spacing-rail-desktop: 64px;
   --spacing-dock-mobile: 56px;
+
+  /*
+   * Breakpoints matching the plan's device matrix. These ADD to Tailwind's
+   * defaults, so `xs:` / `phone:` / `tablet:` / `desktop:` are available
+   * alongside `sm:`..`2xl:`.
+   */
+  --breakpoint-xs: 390px;
+  --breakpoint-phone: 430px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
 }
 
 :root {
