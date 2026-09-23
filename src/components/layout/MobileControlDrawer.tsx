@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cx } from '../../utils/classNames';
+import { acquireBodyScrollLock, releaseBodyScrollLock } from '../../utils/scrollLock';
 import { ArcadeButton } from '../primitives/ArcadeButton';
 
 /** Tabs available in the pull-up drawer. */
@@ -123,11 +124,10 @@ export function MobileControlDrawer({
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    acquireBodyScrollLock();
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      releaseBodyScrollLock();
     };
   }, [open]);
 

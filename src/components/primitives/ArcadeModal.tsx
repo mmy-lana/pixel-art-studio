@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { cx } from '../../utils/classNames';
+import { acquireBodyScrollLock, releaseBodyScrollLock } from '../../utils/scrollLock';
 
 /** Dialog width presets. */
 export type ArcadeModalSize = 'sm' | 'md' | 'lg';
@@ -42,17 +43,6 @@ const FOCUSABLE_SELECTOR = [
   'textarea:not([disabled])',
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
-
-/**
- * Body scroll-lock reference count.
- *
- * Stacked dialogs (a confirmation opened over the project library) each hold a
- * lock; the page only unlocks once the last one releases it, and the original
- * inline styles are captured by whichever modal took the count from 0 to 1.
- */
-let activeModalCount = 0;
-let originalBodyOverflow = '';
-let originalBodyPaddingRight = '';
 
 /**
  * Arcade dialog.
@@ -179,27 +169,10 @@ export function ArcadeModal({
       return;
     }
 
-    if (activeModalCount === 0) {
-      originalBodyOverflow = document.body.style.overflow;
-      originalBodyPaddingRight = document.body.style.paddingRight;
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-      document.body.style.overflow = 'hidden';
-
-      if (scrollbarWidth > 0) {
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-      }
-    }
-
-    activeModalCount += 1;
+    acquireBodyScrollLock();
 
     return () => {
-      activeModalCount = Math.max(0, activeModalCount - 1);
-
-      if (activeModalCount === 0) {
-        document.body.style.overflow = originalBodyOverflow;
-        document.body.style.paddingRight = originalBodyPaddingRight;
-      }
+      releaseBodyScrollLock();
     };
   }, [open]);
 
