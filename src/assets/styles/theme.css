@@ -292,6 +292,73 @@
 }
 
 /* ------------------------------------------------------------------ *
+ * Swatches
+ * ------------------------------------------------------------------ */
+
+/* Colour chip. The transparent checkerboard shows through translucent hexes. */
+.arcade-swatch {
+  position: relative;
+  border: 2px solid #000000;
+  background-color: #2a2a36;
+  background-image:
+    linear-gradient(45deg, #1b1b24 25%, transparent 25%),
+    linear-gradient(-45deg, #1b1b24 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1b1b24 75%),
+    linear-gradient(-45deg, transparent 75%, #1b1b24 75%);
+  background-size: 8px 8px;
+  background-position:
+    0 0,
+    0 4px,
+    4px -4px,
+    -4px 0;
+}
+
+/* Selected chip: hard white keyline plus a neon halo, readable on any colour. */
+.arcade-swatch-selected {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #000000,
+    0 0 8px 1px var(--color-arcade-neon-green);
+  z-index: 1;
+}
+
+/* The colour itself always paints above the checkerboard, at reduced opacity
+   when translucent so the pattern still reads through. */
+.arcade-swatch-fill {
+  position: absolute;
+  inset: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * Layer rows
+ * ------------------------------------------------------------------ */
+
+/* Drop indicator for layer drag-and-drop reordering. */
+.arcade-drop-above::before,
+.arcade-drop-below::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-arcade-neon-green);
+  box-shadow: 0 0 6px 0 var(--color-arcade-neon-green);
+}
+
+.arcade-drop-above::before {
+  top: -2px;
+}
+
+.arcade-drop-below::after {
+  bottom: -2px;
+}
+
+/* Row currently being dragged. */
+.arcade-row-dragging {
+  opacity: 0.4;
+}
+
+/* ------------------------------------------------------------------ *
  * Badges, dividers, spinners
  * ------------------------------------------------------------------ */
 

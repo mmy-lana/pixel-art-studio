@@ -12,7 +12,7 @@
 
 import type { ColorPalette, PaletteColor } from '../../types';
 import { createEntityId } from '../id/createEntityId';
-import { normalizeHexColor } from './colorConvert';
+import { isValidHexColor, normalizeHexColor } from './colorConvert';
 
 /** `[hex, displayName]` tuple used to declare a preset compactly. */
 type PaletteSeedEntry = readonly [hex: string, name: string];
@@ -271,4 +271,62 @@ export function createCustomPalette(name: string, hexColors: readonly string[]):
     colors,
     isCustom: true,
   };
+}
+
+/** Result of parsing a pasted palette hex list. */
+export interface ParsedHexList {
+  /** Canonicalised, de-duplicated colours, in input order. */
+  hexes: string[];
+  /** Entries that were not valid colour strings, in input order. */
+  invalid: string[];
+  /** Entries that parsed but repeated an earlier colour. */
+  duplicates: number;
+}
+
+/**
+ * Parses a loose list of colour strings (hex list export, or text pasted from
+ * another editor) into canonical `#rrggbb` / `#rrggbbaa` values.
+ *
+ * Entries may be separated by commas, whitespace or newlines, and the leading
+ * `#` is optional. Invalid entries are reported rather than silently dropped so
+ * the palette editor can show exactly what it could not read.
+ */
+export function parseHexList(input: string): ParsedHexList {
+  const rawEntries = input
+    .split(/[\s,;]+/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+
+  const hexes: string[] = [];
+  const invalid: string[] = [];
+  const seen = new Set<string>();
+  let duplicates = 0;
+
+  for (const entry of rawEntries) {
+    if (!isValidHexColor(entry)) {
+      invalid.push(entry);
+      continue;
+    }
+
+    const normalized = normalizeHexColor(entry);
+
+    if (seen.has(normalized)) {
+      duplicates += 1;
+      continue;
+    }
+
+    seen.add(normalized);
+    hexes.push(normalized);
+  }
+
+  return { hexes, invalid, duplicates };
+}
+
+/** Serialises a palette (or bare list of colour strings) into a hex list. */
+export function serializeHexList(
+  colors: readonly PaletteColor[] | readonly string[],
+): string {
+  return colors
+    .map((color) => (typeof color === 'string' ? normalizeHexColor(color) : color.hex))
+    .join('\n');
 }
