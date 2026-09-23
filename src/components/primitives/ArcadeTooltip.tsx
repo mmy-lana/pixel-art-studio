@@ -285,7 +285,7 @@ export function ArcadeTooltip({
               visibility: position === null ? 'hidden' : 'visible',
             }}
             className={cx(
-              'arcade-tooltip-bubble pointer-events-none fixed z-[110] flex max-w-[16rem] items-center gap-2 border-2 border-arcade-black bg-arcade-surface px-2 py-1.5',
+              'arcade-tooltip-bubble pointer-events-none fixed z-[110] flex max-w-[min(16rem,calc(100vw-16px))] items-center gap-2 border-2 border-arcade-black bg-arcade-surface px-2 py-1.5',
               className,
             )}
           >
