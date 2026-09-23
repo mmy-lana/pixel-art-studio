@@ -190,6 +190,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
   const spaceHeldRef = useRef(false);
   const hoverRef = useRef<Point | null>(null);
   const lastHoverPublishRef = useRef(0);
+  const wheelDeltaAccumulatorRef = useRef(0);
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
@@ -967,6 +968,16 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
       const rect = container.getBoundingClientRect();
 
       if (event.ctrlKey || event.metaKey) {
+        wheelDeltaAccumulatorRef.current += event.deltaY;
+        const ZOOM_WHEEL_THRESHOLD = 50;
+
+        if (Math.abs(wheelDeltaAccumulatorRef.current) < ZOOM_WHEEL_THRESHOLD) {
+          return;
+        }
+
+        const direction = wheelDeltaAccumulatorRef.current < 0 ? 1 : -1;
+        wheelDeltaAccumulatorRef.current = 0;
+
         const anchorGrid = projectScreenToGrid(
           { x: event.clientX, y: event.clientY },
           rect,
@@ -974,7 +985,6 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
           { width: state.currentProject.width, height: state.currentProject.height },
         );
 
-        const direction = event.deltaY < 0 ? 1 : -1;
         const nextZoom = getSteppedZoom(state.viewport.zoom, direction);
         const pan = getPanForZoomAnchor(
           anchorGrid,
