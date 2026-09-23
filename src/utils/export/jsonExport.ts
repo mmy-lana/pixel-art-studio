@@ -182,9 +182,30 @@ export function parseProjectJson(json: string): {
     throw new ProjectJsonError('That file is not valid JSON.');
   }
 
-  if (typeof parsed !== 'object' || parsed === null) {
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
     throw new ProjectJsonError('That file does not contain a project object.');
   }
+
+  const FORBIDDEN_KEYS = ['__proto__', 'constructor', 'prototype'];
+
+  function assertNoPrototypePollution(record: unknown, path: string): void {
+    if (typeof record !== 'object' || record === null) {
+      return;
+    }
+
+    for (const key of Object.keys(record)) {
+      if (FORBIDDEN_KEYS.includes(key)) {
+        throw new ProjectJsonError(`Forbidden key "${key}" detected at ${path}.`);
+      }
+
+      const value = (record as Record<string, unknown>)[key];
+      if (typeof value === 'object' && value !== null) {
+        assertNoPrototypePollution(value, `${path}.${key}`);
+      }
+    }
+  }
+
+  assertNoPrototypePollution(parsed, 'root');
 
   const candidate = parsed as Partial<SerializedProject>;
 
