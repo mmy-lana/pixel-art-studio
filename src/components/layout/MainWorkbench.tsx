@@ -67,25 +67,25 @@ export function MainWorkbench({
   const tool = getToolDefinition(status.activeTool);
 
   return (
-    <div className={cx('flex min-h-0 flex-1 flex-col', className)}>
-      <div className="flex min-h-0 flex-1">
+    <div className={cx('flex h-full min-h-0 flex-1 flex-col', className)}>
+      <div className="flex h-full min-h-0 flex-1">
         {/* Tool rail: 48px on tablet, 64px from 1024px. */}
         <aside
-          className="arcade-border-arcade hidden flex-none flex-col items-center gap-2 border-r-2 border-black bg-arcade-surface py-2 tablet:flex tablet:w-rail-tablet desktop:w-rail-desktop"
+          className="arcade-border-arcade hidden h-full flex-none flex-col items-center gap-2 border-r-2 border-black bg-arcade-surface py-2 tablet:flex tablet:w-rail-tablet desktop:w-rail-desktop"
           aria-label="Tools"
         >
           {toolRail}
         </aside>
 
         {/* Canvas deck. */}
-        <main className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-arcade-ink">
-          <div className="relative min-h-0 flex-1">{canvas}</div>
+        <main className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col bg-arcade-ink">
+          <div className="relative h-full min-h-0 flex-1">{canvas}</div>
         </main>
 
         {/* Right drawer: 260px on tablet, 320px from 1024px. */}
         <aside
           className={cx(
-            'hidden flex-none flex-col border-l-2 border-black bg-arcade-surface tablet:flex',
+            'hidden h-full flex-none flex-col border-l-2 border-black bg-arcade-surface tablet:flex',
             panelOpen ? 'tablet:w-[260px] desktop:w-[320px]' : 'tablet:w-11',
           )}
           aria-label="Panels"
@@ -99,6 +99,7 @@ export function MainWorkbench({
 
             <ArcadeTooltip
               label={panelOpen ? 'Collapse the panel column' : 'Expand the panel column'}
+              placement="left"
             >
               <ArcadeButton
                 size="icon-sm"
@@ -116,7 +117,7 @@ export function MainWorkbench({
             </ArcadeTooltip>
           </div>
 
-          {panelOpen && (
+          {panelOpen ? (
             <>
               <div className="arcade-scroll min-h-0 flex-1 overflow-y-auto p-2">{rightPanel}</div>
 
@@ -126,6 +127,8 @@ export function MainWorkbench({
                 </div>
               )}
             </>
+          ) : (
+            <div className="flex-1 bg-arcade-surface" />
           )}
         </aside>
       </div>

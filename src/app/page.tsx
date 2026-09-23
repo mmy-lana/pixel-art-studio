@@ -472,7 +472,7 @@ export function StudioPage() {
 
       {/* --------------------- Tablet + desktop (>=768px) -------------------- */}
       <MainWorkbench
-        className="hidden tablet:flex"
+        className="hidden tablet:flex h-full min-h-0 flex-1"
         toolRail={
           <>
             <ToolsetPanel

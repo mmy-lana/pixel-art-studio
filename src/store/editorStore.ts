@@ -446,7 +446,17 @@ const actions: EditorActions = {
       return;
     }
 
-    setState({ viewportSize: size });
+    const clamped = clampPan(
+      { panX: state.viewport.panX, panY: state.viewport.panY },
+      { width: state.currentProject.width, height: state.currentProject.height },
+      size,
+      state.viewport.zoom,
+    );
+
+    setState({
+      viewportSize: size,
+      viewport: { ...state.viewport, ...clamped },
+    });
   },
 
   panBy: (deltaX, deltaY) => {

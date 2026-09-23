@@ -24,7 +24,7 @@ export function StudioLayout({ children, className }: StudioLayoutProps) {
   return (
     <div
       className={cx(
-        'relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-arcade-black text-arcade-text',
+        'relative flex h-screen h-[100dvh] w-screen w-full min-h-0 flex-col overflow-hidden bg-arcade-black text-arcade-text',
         className,
       )}
     >
