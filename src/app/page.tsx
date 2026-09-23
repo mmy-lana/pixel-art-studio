@@ -94,6 +94,12 @@ export function StudioPage() {
     [activePaletteId, customPalettes],
   );
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = `${project.title} — Pixel Art Studio`;
+    }
+  }, [project.title]);
+
   /* ---------------- handlers ---------------- */
 
   const selectTool = useCallback((tool: ToolType): void => {
