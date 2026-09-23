@@ -34,6 +34,7 @@ import { hexToUint32, rgbaToCssString } from '../utils/color/colorConvert';
 import {
   clampZoom,
   getPanForZoomAnchor,
+  getSteppedZoom,
   getTouchDistance,
   getTouchMidpoint,
   projectCanvasToScreen,
@@ -963,7 +964,8 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
           { width: state.currentProject.width, height: state.currentProject.height },
         );
 
-        const nextZoom = clampZoom(state.viewport.zoom * Math.exp(-event.deltaY * 0.002));
+        const direction = event.deltaY < 0 ? 1 : -1;
+        const nextZoom = getSteppedZoom(state.viewport.zoom, direction);
         const pan = getPanForZoomAnchor(
           anchorGrid,
           { x: event.clientX, y: event.clientY },
