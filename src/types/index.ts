@@ -72,6 +72,15 @@ export interface RgbColor {
   b: number;
 }
 
+/**
+ * RGBA byte buffer that is guaranteed to be backed by a plain `ArrayBuffer`.
+ *
+ * The explicit buffer type parameter matches `ImageData`'s `ImageDataArray`, so a
+ * freshly composited frame can be handed straight to `new ImageData(...)` with no
+ * defensive copy.
+ */
+export type RgbaBuffer = Uint8ClampedArray<ArrayBuffer>;
+
 /** Straight (non-premultiplied) 8-bit colour channels plus alpha. */
 export interface PixelRgba {
   r: number;

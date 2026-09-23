@@ -30,8 +30,8 @@ export interface ToolDefinition {
   icon: LucideIcon;
   /** One-line explanation used as the tooltip body. */
   description: string;
-  /** Tailwind cursor utility applied to the canvas while this tool is active. */
-  cursorClass: string;
+  /** CSS cursor keyword applied to the canvas box while this tool is active. */
+  cursor: string;
   /**
    * Hidden from the primary rail on the smallest phones (360-389px), where the
    * dock only has room for four tools (plan §4.1).
@@ -53,7 +53,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'B',
     icon: Pencil,
     description: 'Draw single pixels and continuous strokes.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: true,
   },
   {
@@ -62,7 +62,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'E',
     icon: Eraser,
     description: 'Clear pixels back to full transparency.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: true,
   },
   {
@@ -71,7 +71,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'G',
     icon: PaintBucket,
     description: 'Flood fill a contiguous block of matching colour.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: true,
   },
   {
@@ -80,7 +80,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'I',
     icon: Pipette,
     description: 'Sample a colour from the canvas into the primary slot.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: true,
   },
   {
@@ -89,7 +89,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'L',
     icon: PenLine,
     description: 'Drag a pixel-perfect straight line.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: false,
   },
   {
@@ -98,7 +98,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'U',
     icon: Square,
     description: 'Drag an outlined box. Hold Shift to fill it.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: true,
   },
   {
@@ -107,7 +107,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'C',
     icon: Circle,
     description: 'Drag an outlined ellipse. Hold Shift to fill it.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: false,
   },
   {
@@ -116,7 +116,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'M',
     icon: LassoSelect,
     description: 'Marquee a region to move, clear or keep it floating.',
-    cursorClass: 'cursor-crosshair',
+    cursor: 'crosshair',
     compactDock: false,
   },
   {
@@ -125,7 +125,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     hotkey: 'H',
     icon: Hand,
     description: 'Drag to move the board. Space bar works with any tool.',
-    cursorClass: 'cursor-grab active:cursor-grabbing',
+    cursor: 'grab',
     compactDock: false,
   },
 ];
