@@ -114,18 +114,30 @@ export function RetroHeader({
           {dimensions.width}×{dimensions.height}
         </span>
 
-        <span
-          className={cx(
-            'ml-auto flex flex-none items-center gap-1.5 text-pixel-xs uppercase',
-            statusMeta.textClass,
+        <div className="ml-auto flex flex-none items-center gap-2.5">
+          {hasUnsavedChanges && (
+            <span
+              className="flex items-center gap-1 text-pixel-xs uppercase text-arcade-amber"
+              title="Unsaved changes pending autosave"
+            >
+              <Save aria-hidden="true" className="h-3 w-3" />
+              <span className="hidden xs:inline">UNSAVED</span>
+            </span>
           )}
-          role="status"
-          aria-live="polite"
-          title={lastError ?? undefined}
-        >
-          <span aria-hidden="true" className={cx('led', statusMeta.ledClass)} />
-          {statusMeta.label}
-        </span>
+
+          <span
+            className={cx(
+              'flex flex-none items-center gap-1.5 text-pixel-xs uppercase',
+              statusMeta.textClass,
+            )}
+            role="status"
+            aria-live="polite"
+            title={lastError ?? undefined}
+          >
+            <span aria-hidden="true" className={cx('led', statusMeta.ledClass)} />
+            {statusMeta.label}
+          </span>
+        </div>
 
         {accessory}
       </div>
@@ -223,13 +235,6 @@ export function RetroHeader({
           </ArcadeButton>
         </ArcadeTooltip>
       </div>
-
-      {hasUnsavedChanges && (
-        <span className="flex items-center gap-1.5 text-pixel-xs uppercase text-arcade-amber">
-          <Save aria-hidden="true" className="h-3 w-3" />
-          Unsaved changes
-        </span>
-      )}
     </header>
   );
 }
