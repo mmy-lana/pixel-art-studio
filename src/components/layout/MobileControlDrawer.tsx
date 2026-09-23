@@ -117,6 +117,20 @@ export function MobileControlDrawer({
     };
   }, [open, onClose]);
 
+  /** Body scroll lock while the drawer is open. */
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   /** Move focus into the sheet when it opens. */
   useEffect(() => {
     if (!open) {
