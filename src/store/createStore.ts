@@ -78,20 +78,23 @@ export function useStoreSelector<TState extends object, TSelection>(
   selector: (state: TState) => TSelection,
 ): TSelection {
   const lastStateRef = useRef<TState>(store.getState());
+  const lastSelectorRef = useRef(selector);
   const lastSelectionRef = useRef<TSelection>(selector(lastStateRef.current));
-  const selectorRef = useRef(selector);
-  selectorRef.current = selector;
 
   const getSnapshot = useCallback((): TSelection => {
     const nextState = store.getState();
 
-    if (!Object.is(nextState, lastStateRef.current)) {
+    if (
+      !Object.is(nextState, lastStateRef.current) ||
+      !Object.is(selector, lastSelectorRef.current)
+    ) {
       lastStateRef.current = nextState;
-      lastSelectionRef.current = selectorRef.current(nextState);
+      lastSelectorRef.current = selector;
+      lastSelectionRef.current = selector(nextState);
     }
 
     return lastSelectionRef.current;
-  }, [store]);
+  }, [store, selector]);
 
   return useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
 }
