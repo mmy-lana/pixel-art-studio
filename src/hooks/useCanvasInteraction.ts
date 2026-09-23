@@ -249,11 +249,15 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
     const { viewport, currentProject, symmetryMode: mode, symmetryGuidesVisible: showGuides } = state;
     const zoom = viewport.zoom;
 
-    // Screen-space origin of grid cell (0,0).
-    const origin = projectCanvasToScreen({ x: 0, y: 0 }, rect, viewport, {
+    // Local container-space origin of grid cell (0,0).
+    const screenOrigin = projectCanvasToScreen({ x: 0, y: 0 }, rect, viewport, {
       width: currentProject.width,
       height: currentProject.height,
     });
+    const origin = {
+      x: screenOrigin.x - rect.left,
+      y: screenOrigin.y - rect.top,
+    };
 
     const cellRect = (point: Point): { x: number; y: number; size: number } => ({
       x: origin.x + point.x * zoom,
