@@ -296,11 +296,16 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
 
     /* Shape preview --------------------------------------------------- */
     if (stroke.kind === 'shape' && stroke.staging !== null) {
-      const previewPoints = getShapePoints(
+      const rawPoints = getShapePoints(
         state.selectedTool,
         stroke.anchor,
         stroke.current,
         stroke.filled,
+      );
+      const previewPoints = expandSymmetricStroke(
+        rawPoints,
+        state.symmetryMode,
+        dimensions,
       );
 
       if (previewPoints.length <= MAX_PREVIEW_CELLS) {
@@ -423,11 +428,16 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
     }
 
     if (stroke.kind === 'shape' && stroke.staging !== null) {
-      const points = getShapePoints(
+      const rawPoints = getShapePoints(
         state.selectedTool,
         stroke.anchor,
         stroke.current,
         stroke.filled,
+      );
+      const points = expandSymmetricStroke(
+        rawPoints,
+        state.symmetryMode,
+        dimensions,
       );
 
       const written = writePointsIntoStaging(stroke.staging, points, stroke.color, dimensions);
