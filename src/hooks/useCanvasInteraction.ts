@@ -1065,6 +1065,9 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
     projectHeight,
   ]);
 
+  const paintOverlayRef = useRef(paintOverlay);
+  paintOverlayRef.current = paintOverlay;
+
   /* Overlay canvas sizing: backing store follows the box size and DPR. */
   useEffect(() => {
     const container = containerRef.current;
@@ -1091,7 +1094,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
         height: Math.round(rect.height),
       });
 
-      paintOverlay();
+      paintOverlayRef.current();
     };
 
     resize();
@@ -1102,7 +1105,7 @@ export function useCanvasInteraction(params: CanvasInteractionParams): CanvasInt
     return () => {
       observer.disconnect();
     };
-  }, [containerRef, overlayCanvasRef, paintOverlay]);
+  }, [containerRef, overlayCanvasRef]);
 
   return {
     isDrawing,
